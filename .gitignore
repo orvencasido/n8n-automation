@@ -1,0 +1,6 @@
+#Ignore PEM Keys
+*.pem
+
+#Ignore other sensitive files
+*.key
+*.env
