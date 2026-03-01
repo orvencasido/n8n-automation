@@ -75,7 +75,7 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         if: ${{ github.event.inputs.action == 'start' }}
         run: | 
-          echo: "$EC2_SSH_KEY" > pem.key
+          echo "$EC2_SSH_KEY" > pem.key
           chmod 400 pem.key
 
           #Wait for the instance to be running
