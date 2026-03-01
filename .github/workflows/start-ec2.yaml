@@ -63,20 +63,21 @@ jobs:
           sleep 15
 
           echo "Checking Running Containers"
-          DOCKER_INFO=$(ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} '
+          N8N_STATUS=$(ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} '
             if [ "$(docker ps -q -f name=n8n)" ]; then
               echo "n8n Container is Already Running"
             else
               echo "n8n Container is Not Running. Starting it..."
               docker start n8n
+              echo "n8n Container is Now Started"
             fi
-
-            echo "Current Running Containers"
-            docker ps
           ')
 
-          # Export to GitHub environment for next step
-          echo "DOCKER_INFO=$DOCKER_INFO" >> $GITHUB_ENV
+          # Export to GitHub environment
+          echo "DOCKER_INFO=$N8N_STATUS" >> $GITHUB_ENV
+
+          #Pipeline only, shows all running containers
+          ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} "docker ps"
       
       #Send Email Notification via Gmail if EC2 is started
       - name: Send Email Notification (Start)
@@ -99,7 +100,7 @@ jobs:
             PUBLIC IPv4: ${{ env.PUBLIC_IP }}
             ==========================================
             Docker Containers Status:
-            ${{ env.DOCKER_INFO }}
+            ${{ env.N8N_STATUS }}
             ==========================================
 
             Triggered by: ${{ github.actor }} via GitHub Actions pipeline.
