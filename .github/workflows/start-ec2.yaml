@@ -44,7 +44,49 @@ jobs:
 
           echo "Public IPv4: $PUBLIC_IP"
 
+          # Export to GitHub environment so next step can use it
+          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+      
+      - name: Send Email Notification (Start)
+        uses: dawidd6/action-send-mail@v3
+        if: ${{ github.event.inputs.action == 'start' }}
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: EC2 Instance Notification
+          to: ${{ secrets.EMAIL_TO }}
+          from: GitHub Actions
+          body: |
+            EC2 Instance action Turned On.
+
+            Action: ${{ github.event.inputs.action }}
+            Instance ID: ${{ secrets.EC2_INSTANCE_ID }}
+            public IPv4: ${{ env.PUBLIC_IP }}
+
+            Triggered from GitHub Actions pipeline.
+      
       - name: Stop EC2
         if: ${{ github.event.inputs.action == 'stop' }}
         run: | 
           aws ec2 stop-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }}
+
+      - name: Send Email Notification (Stop)
+        if: ${{ github.event.inputs.action == 'stop' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: EC2 Instance Notification
+          to: ${{ secrets.EMAIL_TO }}
+          from: GitHub Actions
+          body: |
+            EC2 Instance action Turned Off.
+
+            Action: ${{ github.event.inputs.action }}
+            Instance ID: ${{ secrets.EC2_INSTANCE_ID }}
+
+            Triggered from GitHub Actions pipeline.
