@@ -1,6 +1,8 @@
 #!/bin/bash
 # trigger.sh - loads secrets and triggers Makefile
 
+ENV_PATH=".env"
+
 # Load .env file
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
