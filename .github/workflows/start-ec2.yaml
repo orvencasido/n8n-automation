@@ -101,7 +101,7 @@ jobs:
             PUBLIC IPv4: ${{ env.PUBLIC_IP }}
             ==========================================
             Docker Containers Status:
-            ${{ env.N8N_STATUS }}
+            ${{ env.DOCKER_INFO }}
             ==========================================
 
             Triggered by: ${{ github.actor }} via GitHub Actions pipeline.
