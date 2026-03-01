@@ -71,7 +71,7 @@ jobs:
               docker start n8n
               echo "n8n Container is Now Started"
             fi
-          ')
+          ' | tr '\n' ' ')
 
           # Export to GitHub environment
           echo "DOCKER_INFO=$N8N_STATUS" >> $GITHUB_ENV
@@ -93,6 +93,7 @@ jobs:
           from: GitHub Actions
           body: |
             GitHub Actions Triggered 
+            ==========================================
             Repository: n8n-automation
             ==========================================
             EC2 Instance: TURNED ON
@@ -127,6 +128,7 @@ jobs:
           from: GitHub Actions
           body: |
             GitHub Actions Triggered 
+            ==========================================
             Repository: n8n-automation
             ==========================================
             EC2 Instance: STOPPED
