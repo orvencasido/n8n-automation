@@ -72,7 +72,7 @@ jobs:
             fi
 
             echo "Current Running Containers"
-            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+            docker ps
           ')
 
           # Export to GitHub environment for next step
