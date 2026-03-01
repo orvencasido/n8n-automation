@@ -30,7 +30,19 @@ jobs:
       - name: Start EC2 
         if: ${{ github.event.inputs.action == 'start' }}
         run: |
+          echo "Starting EC2 instance..."
           aws ec2 start-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }}
+
+          echo "Waiting for instance to be running..."
+          aws ec2 wait instance-running --instance-ids ${{ secrets.EC2_INSTANCE_ID }}
+
+          echo "Getting public IP..."
+          PUBLIC_IP=$(aws ec2 describe-instances \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text)
+
+          echo "Public IPv4: $PUBLIC_IP"
 
       - name: Stop EC2
         if: ${{ github.event.inputs.action == 'stop' }}
