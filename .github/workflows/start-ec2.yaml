@@ -2,9 +2,6 @@ name: Start EC2 Instance
 
 on:
   workflow_dispatch: #manual trigger in github
-  push:
-    branches:
-      - main
 
 jobs:
   start-ec2:
