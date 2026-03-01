@@ -27,6 +27,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
+########################################## START EC2 ##########################################
+
       #Start EC2
       - name: Start EC2 
         if: ${{ github.event.inputs.action == 'start' }}
@@ -47,6 +49,34 @@ jobs:
 
           # Export to GitHub environment so next step can use it
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+
+      #Check the Status if the n8n container is running
+      - name: Check the status of n8n-container
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        if: ${{ github.event.inputs.action == 'start' }}
+        run: | 
+          echo "$EC2_SSH_KEY" > pem.key
+          chmod 400 pem.key
+
+          #Wait for the instance to be running
+          sleep 15
+
+          echo "Checking Running Containers"
+          DOCKER_INFO=$(ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} '
+            if [ "$(docker ps -q -f name=n8n)" ]; then
+              echo "n8n Container is Already Running"
+            else
+              echo "n8n Container is Not Running. Starting it..."
+              docker start n8n
+            fi
+
+            echo "Current Running Containers"
+            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+          ')
+
+          # Export to GitHub environment for next step
+          echo "DOCKER_INFO=$DOCKER_INFO" >> $GITHUB_ENV
       
       #Send Email Notification via Gmail if EC2 is started
       - name: Send Email Notification (Start)
@@ -61,40 +91,20 @@ jobs:
           to: ${{ secrets.EMAIL_TO }}
           from: GitHub Actions
           body: |
-            EC2 Instance action Turned On.
+            GitHub Actions Triggered 
+            Repository: n8n-automation
+            ==========================================
+            EC2 Instance: TURNED ON
+            ==========================================
+            PUBLIC IPv4: ${{ env.PUBLIC_IP }}
+            ==========================================
+            Docker Containers Status:
+            ${{ env.DOCKER_INFO }}
+            ==========================================
 
-            Action: ${{ github.event.inputs.action }}
-            Instance ID: ${{ secrets.EC2_INSTANCE_ID }}
-            public IPv4: ${{ env.PUBLIC_IP }}
+            Triggered by: ${{ github.actor }} via GitHub Actions pipeline.
 
-            Triggered by orvencasido via GitHub Actions pipeline.
-      
-      #Check the Status if the n8n container is running
-      - name: Check the status of n8n-container
-        env:
-          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        if: ${{ github.event.inputs.action == 'start' }}
-        run: | 
-          echo "$EC2_SSH_KEY" > pem.key
-          chmod 400 pem.key
-
-          #Wait for the instance to be running
-          sleep 15
-
-          echo "Check the Running Containers"
-          ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} '
-            if [ "$(docker ps -q -f name=n8n)" ]; then
-              echo "n8n Container is Already Running"
-            else
-              echo "n8n Container is Not Running. Starting it..."
-              docker start n8n
-            fi
-
-            echo "Current Running Containers"
-            docker ps
-          '
-
-####################### STOP EC2 #######################
+########################################## STOP EC2 ##########################################
 
       #Stop EC2
       - name: Stop EC2
@@ -115,9 +125,10 @@ jobs:
           to: ${{ secrets.EMAIL_TO }}
           from: GitHub Actions
           body: |
-            EC2 Instance action Turned Off.
+            GitHub Actions Triggered 
+            Repository: n8n-automation
+            ==========================================
+            EC2 Instance: STOPPED
+            ==========================================
 
-            Action: ${{ github.event.inputs.action }}
-            Instance ID: ${{ secrets.EC2_INSTANCE_ID }}
-
-            Triggered by orvencasido via GitHub Actions pipeline.
+            Triggered by: ${{ github.actor }} via GitHub Actions pipeline.
