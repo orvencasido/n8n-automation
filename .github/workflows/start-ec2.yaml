@@ -82,7 +82,17 @@ jobs:
           sleep 15
 
           echo "Check the Running Containers"
-          ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} "docker ps"
+          ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} '
+            if [ "$(docker ps -q -f name=n8n)" ]; then
+              echo "n8n Container is Already Running"
+            else
+              echo "n8n Container is Not Running. Starting it..."
+              docker start n8n
+            fi
+
+            echo "Current Running Containers"
+            docker ps
+          '
 
 ####################### STOP EC2 #######################
 
