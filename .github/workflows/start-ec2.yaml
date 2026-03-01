@@ -49,6 +49,7 @@ jobs:
 
           # Export to GitHub environment so next step can use it
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+          echo "::set-output name=PUBLIC_IP::$PUBLIC_IP"
 
       #Check the Status if the n8n container is running
       - name: Check the status of n8n-container
