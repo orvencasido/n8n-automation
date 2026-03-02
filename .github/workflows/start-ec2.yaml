@@ -15,6 +15,8 @@ on:
 jobs:
   control-ec2:
     runs-on: ubuntu-latest
+    outputs:
+      public_ip: ${{ steps.start-ec2.outputs.PUBLIC_IP }}   
 
     steps:
       - name: Checkout Repository
@@ -31,6 +33,7 @@ jobs:
 
       #Start EC2
       - name: Start EC2 
+        id: start-ec2
         if: ${{ github.event.inputs.action == 'start' }}
         run: |
           echo "Starting EC2 instance..."
@@ -48,7 +51,7 @@ jobs:
           echo "Public IPv4: $PUBLIC_IP"
 
           # Export to GitHub environment so next step can use it
-          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_OUTPUT
 
       #Check the Status if the n8n container is running
       - name: Check the status of n8n-container
