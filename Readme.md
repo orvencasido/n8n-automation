@@ -1,3 +1,2 @@
-n8n automation
-
-sample push without pem key
+Please install github actions to enable makefile fetch the ip
+sudo apt install gh

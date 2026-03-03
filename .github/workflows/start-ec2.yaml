@@ -16,9 +16,6 @@ on:
 jobs:
   control-ec2:
     runs-on: ubuntu-latest
-    outputs:
-      public_ip: ${{ steps.start-ec2.outputs.PUBLIC_IP }}   
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -143,11 +140,7 @@ jobs:
       #Sample Message just to fetch 
       - name: Test Message
         if: ${{ github.event.inputs.action == 'test' }}
-        id: test
         run: |
-          echo "message=pogi si Orbs" >> $GITHUB_OUTPUT
+          echo "pogi si Orbs" 
 
-      - name: Print Message
-        run: |
-          echo ${{ steps.test.outputs.message }}
 
