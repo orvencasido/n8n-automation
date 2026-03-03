@@ -11,6 +11,7 @@ on:
         options:
           - start
           - stop
+          - test
 
 jobs:
   control-ec2:
@@ -138,3 +139,11 @@ jobs:
             ==========================================
 
             Triggered by: ${{ github.actor }} via GitHub Actions pipeline.
+      
+      #Sample Message just to fetch 
+      - name: Test Message
+        if: ${{ github.event.inputs.action == 'test' }}
+        run: |
+          test_message="Pogi si Orbs"
+          echo ${test_message} >> $GITHUB_ENV
+
