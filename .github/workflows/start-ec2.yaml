@@ -143,7 +143,11 @@ jobs:
       #Sample Message just to fetch 
       - name: Test Message
         if: ${{ github.event.inputs.action == 'test' }}
+        id: test
         run: |
-          test_message="Pogi si Orbs"
-          echo ${test_message} >> $GITHUB_ENV
+          echo "message=pogi si Orbs" >> $GITHUB_OUTPUT
+
+      - name: Print Message
+        run: |
+          echo ${{ steps.test.outputs.message }}
 
