@@ -11,7 +11,6 @@ on:
         options:
           - start
           - stop
-          - docker
 
 jobs:
   control-ec2:
@@ -51,13 +50,11 @@ jobs:
           # Export to GitHub environment so next step can use it
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
 
-          ssh -o StrictHostKeyChecking=no -i pem.key ubuntu@${{ env.PUBLIC_IP }} "docker ps"
-
       #Check the Status if the n8n container is running
       - name: Check the status of n8n-container
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        if: ${{ github.event.inputs.action == 'docker' }}
+        if: ${{ github.event.inputs.action == 'start' }}
         run: | 
           echo "$EC2_SSH_KEY" > pem.key
           chmod 400 pem.key
