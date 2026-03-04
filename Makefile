@@ -16,9 +16,5 @@ stop:
 		--field action=stop \
 	echo "EC2 Instance Stopped"
 
-docker:
-	gh workflow run start-ec2.yaml \
-		--ref ${GITHUB_BRANCH} \
-		--field action=docker
 
 	
